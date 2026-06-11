@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${product.name} + ' - Eshop'">Product - Eshop</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<nav>
+    <div class="nav-logo">e<span>shop</span></div>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/cart">Cart</a>
+        <a href="/orders">Orders</a>
+        <a th:if="${#authorization.expression('isAuthenticated()')}" href="/logout">Logout</a>
+        <a th:unless="${#authorization.expression('isAuthenticated()')}" href="/login">Login</a>
+    </div>
+</nav>
+
+<main class="main">
+
+    <!-- PRODUCT DETAIL SECTION -->
+    <div class="product-detail">
+
+        <!-- LEFT: Product image -->
+        <div class="product-detail-img">
+            <img
+                th:if="${product.imageUrl != null}"
+                th:src="${product.imageUrl}"
+                th:alt="${product.name}"
+            />
+            <div class="product-img-placeholder" th:unless="${product.imageUrl != null}">
+                No image
+            </div>
+        </div>
+
+        <!-- RIGHT: Product info -->
+        <div class="product-detail-info">
+            <div class="product-detail-category"
+                 th:text="${product.category != null ? product.category.name : ''}">
+            </div>
+            <h1 th:text="${product.name}"></h1>
+            <div class="product-detail-price"
+                 th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}">
+            </div>
+            <p class="product-detail-description" th:text="${product.description}"></p>
+
+            <!-- Stock status -->
+            <div class="stock-status">
+                <span class="in-stock" th:if="${product.stock > 0}"
+                      th:text="'In stock (' + ${product.stock} + ' available)'">
+                </span>
+                <span class="out-of-stock" th:unless="${product.stock > 0}">
+                    Out of stock
+                </span>
+            </div>
+
+            <!-- Add to cart form -->
+            <form method="post" action="/cart/add" th:if="${product.stock > 0}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <input type="hidden" name="productId" th:value="${product.id}"/>
+                <div class="quantity-row">
+                    <label for="quantity">Quantity</label>
+                    <input type="number" id="quantity" name="quantity"
+                           value="1" min="1" th:max="${product.stock}"/>
+                </div>
+                <button type="submit" class="btn-submit">Add to Cart</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- REVIEWS SECTION -->
+    <div class="reviews-section">
+        <h2>Customer Reviews</h2>
+
+        <!-- Average rating -->
+        <div class="average-rating" th:if="${averageRating > 0}">
+            Average rating:
+            <strong th:text="${#numbers.formatDecimal(averageRating, 1, 1)} + ' / 5'"></strong>
+        </div>
+
+        <!-- No reviews yet -->
+        <div class="empty" th:if="${#lists.isEmpty(reviews)}">
+            <p>No reviews yet — be the first!</p>
+        </div>
+
+        <!-- Review list -->
+        <div class="review-card" th:each="review : ${reviews}">
+            <div class="review-header">
+                <span class="review-author" th:text="${review.user.name}"></span>
+                <span class="review-rating" th:text="${review.rating} + ' / 5'"></span>
+                <span class="review-date"
+                      th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy')}">
+                </span>
+            </div>
+            <p class="review-comment" th:text="${review.comment}"></p>
+        </div>
+
+        <!-- Add review form (only shown when logged in) -->
+        <div class="add-review" th:if="${#authorization.expression('isAuthenticated()')}">
+            <h3>Leave a Review</h3>
+            <form method="post" th:action="@{/product/{id}/review(id=${product.id})}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <div class="form-group">
+                    <label for="rating">Rating (1-5)</label>
+                    <input type="number" id="rating" name="rating" min="1" max="5" required/>
+                </div>
+                <div class="form-group">
+                    <label for="comment">Comment</label>
+                    <textarea id="comment" name="comment" rows="3"
+                              placeholder="Share your thoughts..."></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Submit Review</button>
+            </form>
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

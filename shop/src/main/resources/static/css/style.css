@@ -130,3 +130,175 @@ nav {
 
 /* ---- EMPTY STATE ---- */
 .empty { text-align: center; padding: 4rem; color: #999; }
+
+/* ---- AUTH PAGES (login & register) ---- */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 60px);
+    padding: 2rem;
+}
+.auth-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 420px;
+}
+.auth-card h2 {
+    margin-bottom: 1.5rem;
+    font-size: 22px;
+    text-align: center;
+}
+.form-group {
+    margin-bottom: 1rem;
+}
+.form-group label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: #555;
+}
+.form-group input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+.form-group input:focus {
+    outline: none;
+    border-color: #3478AD;
+}
+.btn-submit {
+    width: 100%;
+    padding: 10px;
+    background: #3478AD;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+}
+.btn-submit:hover { background: #285f8f; }
+.auth-link {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 14px;
+    color: #555;
+}
+.auth-link a { color: #3478AD; text-decoration: none; }
+.auth-link a:hover { text-decoration: underline; }
+.alert {
+    padding: 10px 12px;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    font-size: 14px;
+}
+.alert-error { background: #fde8e8; color: #a32d2d; border: 1px solid #f5c6c6; }
+.alert-success { background: #e8f5e9; color: #2d6a2d; border: 1px solid #c6e8c6; }
+
+/* ---- PRODUCT DETAIL PAGE ---- */
+.product-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 2rem;
+}
+.product-detail-img img {
+    width: 100%;
+    border-radius: 8px;
+    object-fit: cover;
+    max-height: 400px;
+}
+.product-detail-category {
+    font-size: 12px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+.product-detail-info h1 {
+    font-size: 26px;
+    margin-bottom: 0.5rem;
+}
+.product-detail-price {
+    font-size: 24px;
+    color: #3478AD;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+.product-detail-description {
+    font-size: 15px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+.stock-status { margin-bottom: 1rem; font-size: 14px; }
+.in-stock { color: #2d6a2d; font-weight: bold; }
+.out-of-stock { color: #a32d2d; font-weight: bold; }
+.quantity-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.quantity-row label { font-size: 14px; color: #555; }
+.quantity-row input {
+    width: 70px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* ---- REVIEWS ---- */
+.reviews-section {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 2rem;
+}
+.reviews-section h2 { font-size: 20px; margin-bottom: 1rem; }
+.average-rating {
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 1.5rem;
+}
+.review-card {
+    border-bottom: 1px solid #eee;
+    padding: 1rem 0;
+}
+.review-card:last-of-type { border-bottom: none; }
+.review-header {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.review-author { font-weight: bold; font-size: 14px; }
+.review-rating { color: #3478AD; font-size: 14px; font-weight: bold; }
+.review-date { font-size: 12px; color: #999; margin-left: auto; }
+.review-comment { font-size: 14px; color: #555; line-height: 1.5; }
+.add-review {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #eee;
+}
+.add-review h3 { font-size: 17px; margin-bottom: 1rem; }
+.add-review textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    resize: vertical;
+}

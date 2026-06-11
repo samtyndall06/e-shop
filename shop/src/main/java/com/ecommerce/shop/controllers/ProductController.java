@@ -5,6 +5,8 @@ import com.ecommerce.shop.models.Category;
 import com.ecommerce.shop.services.ProductService;
 import com.ecommerce.shop.services.CategoryService;
 import com.ecommerce.shop.services.ReviewService;
+import com.ecommerce.shop.services.UserService;
+import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +25,9 @@ public class ProductController {
 
     @Autowired
     private ReviewService reviewService;
+    
+    @Autowired
+    private UserService userService;
 
     // Home page — shows all products
     // Handles GET http://localhost:8080/
@@ -78,4 +83,23 @@ public class ProductController {
         // Returns src/main/resources/templates/product.html
         return "product";
     }
+    
+    // Handle review form submission
+    // Handles POST http://localhost:8081/product/1/review
+    @PostMapping("/product/{id}/review")
+    public String addReview(@PathVariable Long id,
+            @RequestParam Integer rating,
+            @RequestParam String comment,
+            Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        productService.getProductById(id).ifPresent(product -> {
+            com.ecommerce.shop.models.User user
+                    = userService.getUserByEmail(principal.getName());
+            reviewService.addReview(user, product, rating, comment);
+        });
+        return "redirect:/product/" + id;
+    }
 }
+

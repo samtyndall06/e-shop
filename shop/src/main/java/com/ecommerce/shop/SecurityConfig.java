@@ -5,49 +5,72 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-// Marks this as a configuration class
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // @Lazy prevents a circular dependency between
-    // SecurityConfig and UserService
     @Autowired
     @Lazy
     private UserService userService;
 
-    // This is the bean UserService was looking for!
-    // BCrypt is a strong password hashing algorithm
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // Controls which pages require login and which are public
+    // Loads the user from the database by email
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return email -> {
+            com.ecommerce.shop.models.User user = userService.getUserByEmail(email);
+            return org.springframework.security.core.userdetails.User
+                .withUsername(user.getEmail())
+                .password(user.getPassword())
+                .roles("USER")
+                .build();
+        };
+    }
+
+    // Wires together the UserDetailsService and PasswordEncoder
+    // This is what actually validates the login
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService());
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
-                // These pages are public — anyone can access them
                 .requestMatchers("/", "/product/**", "/register", "/login", "/css/**", "/js/**").permitAll()
-                // Everything else requires login
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
-                // Spring Security will show this page for login
                 .loginPage("/login")
-                // After login, go to home page
                 .defaultSuccessUrl("/", true)
                 .permitAll()
             )
             .logout(logout -> logout
-                // After logout, go to home page
                 .logoutSuccessUrl("/")
                 .permitAll()
             );
