@@ -2,12 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eshop - Home</title>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
 
-<!-- NAVBAR -->
 <nav>
     <div class="nav-logo">e<span>shop</span></div>
     <div class="nav-links">
@@ -17,58 +17,65 @@
         <a th:if="${#authorization.expression('isAuthenticated()')}" href="/logout">Logout</a>
         <a th:unless="${#authorization.expression('isAuthenticated()')}" href="/login">Login</a>
     </div>
+    <!-- Hamburger button — only visible on mobile -->
+    <button type="button" class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
 </nav>
 
-<!-- SEARCH & FILTER TOOLBAR -->
+<!-- Mobile dropdown menu -->
+<div class="mobile-menu" id="mobileMenu">
+    <a href="/">Home</a>
+    <a href="/cart">Cart</a>
+    <a href="/orders">Orders</a>
+    <a th:if="${#authorization.expression('isAuthenticated()')}" href="/logout">Logout</a>
+    <a th:unless="${#authorization.expression('isAuthenticated()')}" href="/login">Login</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+    <h1>The best products,<br/>delivered to you.</h1>
+    <p>Shop the latest electronics, fashion, and home essentials — all in one place.</p>
+    <div class="hero-actions">
+        <a href="#products" class="btn-primary">Shop Now</a>
+        <a href="/register" class="btn-secondary">Create Account</a>
+    </div>
+</section>
+
+<!-- TOOLBAR -->
 <div class="toolbar">
-    <form method="get" action="/" style="display:flex; gap: 8px;">
-        <input
-            type="text"
-            name="search"
-            placeholder="Search products..."
-            th:value="${search}"
-        />
+    <form method="get" action="/">
+        <input type="text" name="search" placeholder="Search products..." th:value="${search}"/>
         <button type="submit">Search</button>
     </form>
     <div class="category-filters">
         <a href="/" th:classappend="${selectedCategory == null} ? 'active'">All</a>
-
-            <a th:each="category : ${categories}"
-            th:href="@{/(categoryId=${category.id})}"
-            th:text="${category.name}"
-            th:classappend="${selectedCategory == category.id} ? 'active'"
-        ></a>
+        <a th:each="category : ${categories}" th:href="@{/(categoryId=${category.id})}" th:text="${category.name}" th:classappend="${selectedCategory == category.id} ? 'active'"></a>
     </div>
 </div>
 
-<!-- MAIN CONTENT -->
-<main class="main">
+<!-- PRODUCTS -->
+<main class="main" id="products">
+    <p class="section-label" th:unless="${#lists.isEmpty(products)}"
+       th:text="${#lists.size(products)} + ' products'"></p>
 
     <div class="empty" th:if="${#lists.isEmpty(products)}">
         <p>No products found.</p>
+        <a href="/" class="btn-browse">Clear filters</a>
     </div>
 
     <div class="product-grid" th:unless="${#lists.isEmpty(products)}">
         <div class="product-card" th:each="product : ${products}">
-
             <a th:href="@{/product/{id}(id=${product.id})}">
-                <img
-                    th:if="${product.imageUrl != null}"
-                    th:src="${product.imageUrl}"
-                    th:alt="${product.name}"
-                />
-                <div class="product-img-placeholder" th:unless="${product.imageUrl != null}">
-                    No image
-                </div>
+                <img th:if="${product.imageUrl != null}" th:src="${product.imageUrl}" th:alt="${product.name}"/>
+                <div class="product-img-placeholder" th:unless="${product.imageUrl != null}">No image</div>
             </a>
-
             <div class="product-info">
-                <div class="product-category"
-                     th:text="${product.category != null ? product.category.name : ''}">
-                </div>
+                <div class="product-category" th:text="${product.category != null ? product.category.name : ''}"></div>
                 <div class="product-name" th:text="${product.name}"></div>
                 <div class="product-price" th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}"></div>
-
                 <form method="post" action="/cart/add">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                     <input type="hidden" name="productId" th:value="${product.id}"/>
@@ -76,11 +83,23 @@
                     <button class="btn-add" type="submit">Add to Cart</button>
                 </form>
             </div>
-
         </div>
     </div>
-
 </main>
-
+<script>
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('open');
+        mobileMenu.classList.toggle('open');
+    });
+    // Close menu when a link is clicked
+    mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            hamburger.classList.remove('open');
+            mobileMenu.classList.remove('open');
+        });
+    });
+</script>
 </body>
 </html>

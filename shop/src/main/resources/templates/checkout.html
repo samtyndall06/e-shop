@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eshop - Cart</title>
+    <title>Eshop - Checkout</title>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
@@ -35,22 +35,15 @@
 </div>
 
 <main class="main">
-    <h1 class="page-title">Your Cart</h1>
+    <h1 class="page-title">Checkout</h1>
 
-    <!-- Empty cart -->
-    <div class="empty" th:if="${#lists.isEmpty(cartItems)}">
-        <p>Your cart is empty.</p>
-        <a href="/" class="btn-browse">Browse products</a>
-    </div>
+    <div class="checkout-container">
 
-    <!-- Cart items -->
-    <div class="cart-container" th:unless="${#lists.isEmpty(cartItems)}">
+        <!-- LEFT: Order summary -->
+        <div class="checkout-items">
+            <h2>Order Summary</h2>
 
-        <!-- Cart items list -->
-        <div class="cart-items">
             <div class="cart-item" th:each="item : ${cartItems}">
-
-                <!-- Product image -->
                 <div class="cart-item-img">
                     <img
                         th:if="${item.product.imageUrl != null}"
@@ -61,58 +54,78 @@
                         No image
                     </div>
                 </div>
-
-                <!-- Product details -->
                 <div class="cart-item-details">
                     <div class="cart-item-name" th:text="${item.product.name}"></div>
-                    <div class="cart-item-category"
-                         th:text="${item.product.category != null ? item.product.category.name : ''}">
-                    </div>
                     <div class="cart-item-price"
                          th:text="'$' + ${#numbers.formatDecimal(item.product.price, 1, 2)}">
                     </div>
                 </div>
-
-                <!-- Quantity -->
                 <div class="cart-item-quantity">
                     <span>Qty: </span>
                     <strong th:text="${item.quantity}"></strong>
                 </div>
-
-                <!-- Item subtotal -->
                 <div class="cart-item-subtotal"
                      th:text="'$' + ${#numbers.formatDecimal(item.product.price * item.quantity, 1, 2)}">
                 </div>
-
-                <!-- Remove button -->
-                <form method="post" action="/cart/remove">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                    <input type="hidden" name="cartItemId" th:value="${item.id}"/>
-                    <button type="submit" class="btn-remove">Remove</button>
-                </form>
-
             </div>
-        </div>
 
-        <!-- Cart summary -->
-        <div class="cart-summary">
-            <h2>Order Summary</h2>
-            <div class="summary-row">
-                <span>Subtotal</span>
-                <span th:text="'$' + ${#numbers.formatDecimal(cartTotal, 1, 2)}"></span>
-            </div>
-            <div class="summary-row">
-                <span>Shipping</span>
-                <span>Free</span>
-            </div>
-            <div class="summary-row summary-total">
+            <!-- Total -->
+            <div class="checkout-total">
                 <span>Total</span>
                 <span th:text="'$' + ${#numbers.formatDecimal(cartTotal, 1, 2)}"></span>
             </div>
-            <a href="/checkout" class="btn-submit" style="display:block; text-align:center; text-decoration:none; margin-top:1rem;">
-                Proceed to Checkout
-            </a>
-            <a href="/" class="btn-continue">Continue Shopping</a>
+        </div>
+
+        <!-- RIGHT: Payment & confirm -->
+        <div class="checkout-form">
+            <h2>Payment Details</h2>
+            <p class="checkout-note">This is a demo store — no real payment is processed.</p>
+
+            <!-- Fake card fields for UI purposes only -->
+            <div class="form-group">
+                <label>Cardholder Name</label>
+                <input type="text" placeholder="John Smith"/>
+            </div>
+            <div class="form-group">
+                <label>Card Number</label>
+                <input type="text" placeholder="1234 5678 9012 3456" maxlength="19"/>
+            </div>
+            <div class="checkout-row">
+                <div class="form-group">
+                    <label>Expiry Date</label>
+                    <input type="text" placeholder="MM/YY" maxlength="5"/>
+                </div>
+                <div class="form-group">
+                    <label>CVV</label>
+                    <input type="text" placeholder="123" maxlength="3"/>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 1.5rem;">Shipping Address</h2>
+            <div class="form-group">
+                <label>Street Address</label>
+                <input type="text" placeholder="123 Main Street"/>
+            </div>
+            <div class="checkout-row">
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" placeholder="Auckland"/>
+                </div>
+                <div class="form-group">
+                    <label>Postcode</label>
+                    <input type="text" placeholder="1010"/>
+                </div>
+            </div>
+
+            <!-- Confirm order form — this is the real submit -->
+            <form method="post" action="/checkout/confirm">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn-submit" style="margin-top: 1.5rem;">
+                    Place Order
+                </button>
+            </form>
+
+            <a href="/cart" class="btn-continue">Back to Cart</a>
         </div>
 
     </div>

@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eshop - Login</title>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
@@ -11,10 +12,27 @@
     <div class="nav-logo">e<span>shop</span></div>
     <div class="nav-links">
         <a href="/">Home</a>
-        <a href="/login">Login</a>
-        <a href="/register">Register</a>
+        <a href="/cart">Cart</a>
+        <a href="/orders">Orders</a>
+        <a th:if="${#authorization.expression('isAuthenticated()')}" href="/logout">Logout</a>
+        <a th:unless="${#authorization.expression('isAuthenticated()')}" href="/login">Login</a>
     </div>
+    <!-- Hamburger button — only visible on mobile -->
+    <button type="button" class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
 </nav>
+
+<!-- Mobile dropdown menu -->
+<div class="mobile-menu" id="mobileMenu">
+    <a href="/">Home</a>
+    <a href="/cart">Cart</a>
+    <a href="/orders">Orders</a>
+    <a th:if="${#authorization.expression('isAuthenticated()')}" href="/logout">Logout</a>
+    <a th:unless="${#authorization.expression('isAuthenticated()')}" href="/login">Login</a>
+</div>
 
 <div class="auth-container">
     <div class="auth-card">
@@ -46,6 +64,20 @@
         <p class="auth-link">Don't have an account? <a href="/register">Register here</a></p>
     </div>
 </div>
-
+<script>
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('open');
+        mobileMenu.classList.toggle('open');
+    });
+    // Close menu when a link is clicked
+    mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            hamburger.classList.remove('open');
+            mobileMenu.classList.remove('open');
+        });
+    });
+</script>
 </body>
 </html>

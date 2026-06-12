@@ -5,6 +5,7 @@ import com.ecommerce.shop.repositories.OrderRepository;
 import com.ecommerce.shop.repositories.OrderItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +33,7 @@ public class OrderService {
     }
 
     // Place an order from the user's cart
+    @Transactional
     public Order placeOrder(User user, List<Cart> cartItems) {
 
         // Create the order
