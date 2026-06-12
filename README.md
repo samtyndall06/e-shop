@@ -3,7 +3,7 @@
 A full-stack e-commerce web application built with Java Spring Boot, PostgreSQL, and Thymeleaf.
 
 Homepage
-(![alt text](image.png))
+![alt text](image.png)
 
 ## Tech Stack
 
