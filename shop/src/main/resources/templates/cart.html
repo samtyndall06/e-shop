@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Eshop - Cart</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<nav>
+    <div class="nav-logo">e<span>shop</span></div>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/cart">Cart</a>
+        <a href="/orders">Orders</a>
+        <a th:if="${#authorization.expression('isAuthenticated()')}" href="/logout">Logout</a>
+        <a th:unless="${#authorization.expression('isAuthenticated()')}" href="/login">Login</a>
+    </div>
+</nav>
+
+<main class="main">
+    <h1 class="page-title">Your Cart</h1>
+
+    <!-- Empty cart -->
+    <div class="empty" th:if="${#lists.isEmpty(cartItems)}">
+        <p>Your cart is empty.</p>
+        <a href="/" class="btn-browse">Browse products</a>
+    </div>
+
+    <!-- Cart items -->
+    <div class="cart-container" th:unless="${#lists.isEmpty(cartItems)}">
+
+        <!-- Cart items list -->
+        <div class="cart-items">
+            <div class="cart-item" th:each="item : ${cartItems}">
+
+                <!-- Product image -->
+                <div class="cart-item-img">
+                    <img
+                        th:if="${item.product.imageUrl != null}"
+                        th:src="${item.product.imageUrl}"
+                        th:alt="${item.product.name}"
+                    />
+                    <div class="product-img-placeholder" th:unless="${item.product.imageUrl != null}">
+                        No image
+                    </div>
+                </div>
+
+                <!-- Product details -->
+                <div class="cart-item-details">
+                    <div class="cart-item-name" th:text="${item.product.name}"></div>
+                    <div class="cart-item-category"
+                         th:text="${item.product.category != null ? item.product.category.name : ''}">
+                    </div>
+                    <div class="cart-item-price"
+                         th:text="'$' + ${#numbers.formatDecimal(item.product.price, 1, 2)}">
+                    </div>
+                </div>
+
+                <!-- Quantity -->
+                <div class="cart-item-quantity">
+                    <span>Qty: </span>
+                    <strong th:text="${item.quantity}"></strong>
+                </div>
+
+                <!-- Item subtotal -->
+                <div class="cart-item-subtotal"
+                     th:text="'$' + ${#numbers.formatDecimal(item.product.price * item.quantity, 1, 2)}">
+                </div>
+
+                <!-- Remove button -->
+                <form method="post" action="/cart/remove">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <input type="hidden" name="cartItemId" th:value="${item.id}"/>
+                    <button type="submit" class="btn-remove">Remove</button>
+                </form>
+
+            </div>
+        </div>
+
+        <!-- Cart summary -->
+        <div class="cart-summary">
+            <h2>Order Summary</h2>
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span th:text="'$' + ${#numbers.formatDecimal(cartTotal, 1, 2)}"></span>
+            </div>
+            <div class="summary-row">
+                <span>Shipping</span>
+                <span>Free</span>
+            </div>
+            <div class="summary-row summary-total">
+                <span>Total</span>
+                <span th:text="'$' + ${#numbers.formatDecimal(cartTotal, 1, 2)}"></span>
+            </div>
+            <a href="/checkout" class="btn-submit" style="display:block; text-align:center; text-decoration:none; margin-top:1rem;">
+                Proceed to Checkout
+            </a>
+            <a href="/" class="btn-continue">Continue Shopping</a>
+        </div>
+
+    </div>
+</main>
+
+</body>
+</html>
